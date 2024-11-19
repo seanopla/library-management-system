@@ -4,7 +4,7 @@ import { CFooter } from '@coreui/react'
 const AppFooter = () => {
   return (
     <CFooter className="px-4">
-      <div>
+      {/* <div>
         <a href="https://coreui.io" target="_blank" rel="noopener noreferrer">
           CoreUI
         </a>
@@ -15,7 +15,9 @@ const AppFooter = () => {
         <a href="https://coreui.io/react" target="_blank" rel="noopener noreferrer">
           CoreUI React Admin &amp; Dashboard Template
         </a>
-      </div>
+      </div> */}
+      <div className="">&copy; Library Management System</div>
+      <div className="ms-auto">Created By: Ahmad Naufal Fadhillah</div>
     </CFooter>
   )
 }
