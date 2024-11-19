@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   CButton,
   CCard,
@@ -17,6 +17,13 @@ import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 
 const Login = () => {
+  const navigate = useNavigate() // Menggunakan useNavigate untuk navigasi
+
+  const onAdd = () => {
+    // Fungsi sementara untuk mengalihkan ke halaman dashboard
+    navigate('/dashboard') // Ganti '/dashboard' dengan path dashboard yang sesuai
+  }
+
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
@@ -46,7 +53,7 @@ const Login = () => {
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>
-                        <CButton color="primary" className="px-4">
+                        <CButton color="primary" className="px-4" onClick={onAdd}>
                           Login
                         </CButton>
                       </CCol>
