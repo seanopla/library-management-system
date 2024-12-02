@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   CButton,
@@ -15,13 +15,57 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
+import Swal from 'sweetalert2'
 
 const Login = () => {
+  const adminEmail = ''
+  const adminPassword = ''
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
   const navigate = useNavigate() // Menggunakan useNavigate untuk navigasi
 
-  const onAdd = () => {
-    // Fungsi sementara untuk mengalihkan ke halaman dashboard
-    navigate('/dashboard') // Ganti '/dashboard' dengan path dashboard yang sesuai
+  const handleLogin = (e) => {
+    e.preventDefault()
+
+    if (email === adminEmail && password === adminPassword) {
+      Swal.fire({
+        timer: 1500,
+        showConfirmButton: false,
+        willOpen: () => {
+          Swal.showLoading()
+        },
+        willClose: () => {
+          // localStorage.setItem('is_authenticated', true)
+          // setIsAuthenticated(true)
+          navigate('/dashboard')
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Successfully logged in!',
+            showConfirmButton: false,
+            timer: 1500,
+          })
+        },
+      })
+    } else {
+      Swal.fire({
+        timer: 1500,
+        showConfirmButton: false,
+        willOpen: () => {
+          Swal.showLoading()
+        },
+        willClose: () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'Incorrect email or password.',
+            showConfirmButton: true,
+          })
+        },
+      })
+    }
   }
 
   return (
@@ -32,14 +76,19 @@ const Login = () => {
             <CCardGroup>
               <CCard className="p-4">
                 <CCardBody>
-                  <CForm>
+                  <CForm onSubmit={handleLogin}>
                     <h1>Login</h1>
                     <p className="text-body-secondary">Sign In to your account</p>
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
-                      <CFormInput placeholder="Username" autoComplete="username" />
+                      <CFormInput
+                        placeholder="Username"
+                        autoComplete="username"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
                       <CInputGroupText>
@@ -49,11 +98,13 @@ const Login = () => {
                         type="password"
                         placeholder="Password"
                         autoComplete="current-password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>
-                        <CButton color="primary" className="px-4" onClick={onAdd}>
+                        <CButton color="primary" className="px-4" type="submit">
                           Login
                         </CButton>
                       </CCol>
