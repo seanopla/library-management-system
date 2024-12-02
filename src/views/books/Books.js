@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   CButton,
   CCard,
@@ -24,110 +24,56 @@ import CIcon from '@coreui/icons-react'
 import { DocsExample } from 'src/components'
 import { cilPlus, cilSearch } from '@coreui/icons'
 import DataTable from 'react-data-table-component'
+import { collection, getDocs } from 'firebase/firestore'
+import { db } from '../../config/firestore'
 
 const columns = [
+  {
+    name: 'Id',
+    selector: (row) => row.id,
+    sortable: true,
+  },
   {
     name: 'Title',
     selector: (row) => row.title,
     sortable: true,
+    wrap: true,
   },
   {
-    name: 'Year',
-    selector: (row) => row.year,
+    name: 'Author',
+    selector: (row) => row.author,
     sortable: true,
   },
-]
-
-const data = [
   {
-    id: 1,
-    title: 'Beetlejuice',
-    year: '1988',
+    name: 'Genre',
+    selector: (row) => row.genre,
+    sortable: true,
   },
   {
-    id: 2,
-    title: 'Ghostbusters',
-    year: '1984',
+    name: 'Publication Year',
+    selector: (row) => row.publicationYear,
+    sortable: true,
   },
   {
-    id: 3,
-    title: 'Ghostbusters',
-    year: '1984',
-  },
-  {
-    id: 4,
-    title: 'Ghostbusters',
-    year: '1984',
-  },
-  {
-    id: 5,
-    title: 'Ghostbusters',
-    year: '1984',
-  },
-  {
-    id: 6,
-    title: 'Ghostbusters',
-    year: '1984',
-  },
-  {
-    id: 7,
-    title: 'Ghostbusters',
-    year: '1984',
-  },
-  {
-    id: 8,
-    title: 'Ghostbusters',
-    year: '1984',
-  },
-  {
-    id: 9,
-    title: 'Ghostbusters',
-    year: '1984',
-  },
-  {
-    id: 10,
-    title: 'Ghostbusters',
-    year: '1984',
-  },
-  {
-    id: 11,
-    title: 'Ghostbusters',
-    year: '1984',
-  },
-  {
-    id: 12,
-    title: 'Ghostbusters',
-    year: '1984',
-  },
-  {
-    id: 13,
-    title: 'Ghostbusters',
-    year: '1984',
-  },
-  {
-    id: 14,
-    title: 'Ghostbusters',
-    year: '1984',
-  },
-  {
-    id: 15,
-    title: 'Ghostbusters',
-    year: '1984',
-  },
-  {
-    id: 16,
-    title: 'Ghostbusters',
-    year: '1984',
-  },
-  {
-    id: 17,
-    title: 'Ghostbusters',
-    year: '1984',
+    name: 'Copies Available',
+    selector: (row) => row.copiesAvailable,
+    sortable: true,
   },
 ]
 
 const Books = () => {
   const [visible, setVisible] = useState(false)
+
+  const [books, setBooks] = useState()
+  const getData = async () => {
+    const querySnapshot = await getDocs(collection(db, 'books'))
+    const books = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+    setBooks(books)
+  }
+
+  useEffect(() => {
+    getData()
+  }, [])
 
   return (
     <CRow>
@@ -164,10 +110,11 @@ const Books = () => {
             <hr />
             <DataTable
               columns={columns}
-              data={data}
+              data={books}
               pagination
               fixedHeader
               fixedHeaderScrollHeight="500px"
+              responsive
             />
           </CCardBody>
         </CCard>
@@ -184,12 +131,12 @@ const Books = () => {
           </CModalHeader>
           <CModalBody>
             <CForm className="row g-3">
-              <CCol md={6}>
-                <CFormLabel htmlFor="inputEmail4">ISBN</CFormLabel>
+              <CCol md={12}>
+                <CFormLabel>ISBN</CFormLabel>
                 <CFormInput type="text" />
               </CCol>
-              <CCol md={6}>
-                <CFormLabel htmlFor="inputPassword4">Book Name</CFormLabel>
+              <CCol md={12}>
+                <CFormLabel>Book Name</CFormLabel>
                 <CFormInput type="text" />
               </CCol>
             </CForm>
