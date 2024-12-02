@@ -63,12 +63,20 @@ const columns = [
 
 const Books = () => {
   const [visible, setVisible] = useState(false)
+  const [books, setBooks] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const [books, setBooks] = useState()
   const getData = async () => {
-    const querySnapshot = await getDocs(collection(db, 'books'))
-    const books = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-    setBooks(books)
+    setLoading(true)
+    try {
+      const querySnapshot = await getDocs(collection(db, 'books'))
+      const books = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+      setBooks(books)
+    } catch (error) {
+      console.error('Error fetching books:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -115,6 +123,7 @@ const Books = () => {
               fixedHeader
               fixedHeaderScrollHeight="500px"
               responsive
+              progressPending={loading}
             />
           </CCardBody>
         </CCard>
