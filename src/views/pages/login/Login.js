@@ -16,55 +16,55 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import Swal from 'sweetalert2'
+import { auth, db } from './../../../config/firestore'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { doc, getDoc } from 'firebase/firestore'
+import { useDispatch } from 'react-redux'
 
 const Login = () => {
-  const adminEmail = ''
-  const adminPassword = ''
-
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
-  const navigate = useNavigate() // Menggunakan useNavigate untuk navigasi
-
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
+    setLoading(true)
 
-    if (email === adminEmail && password === adminPassword) {
-      Swal.fire({
-        timer: 1500,
-        showConfirmButton: false,
-        willOpen: () => {
-          Swal.showLoading()
-        },
-        willClose: () => {
-          // localStorage.setItem('is_authenticated', true)
-          // setIsAuthenticated(true)
-          navigate('/dashboard')
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      const user = userCredential.user
 
-          Swal.fire({
-            icon: 'success',
-            title: 'Successfully logged in!',
-            showConfirmButton: false,
-            timer: 1500,
-          })
-        },
-      })
-    } else {
+      const userDoc = await getDoc(doc(db, 'users', user.uid))
+      if (userDoc.exists()) {
+        const role = userDoc.data().role
+        dispatch({ type: 'login', payload: { uid: user.uid, email: user.email, role } })
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Login berhasil!',
+          showConfirmButton: false,
+          timer: 1500,
+        })
+
+        navigate('/dashboard')
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Data pengguna tidak ditemukan!',
+          text: 'Silakan hubungi admin sistem.',
+        })
+      }
+    } catch (error) {
+      console.error('Error logging in:', error)
       Swal.fire({
-        timer: 1500,
-        showConfirmButton: false,
-        willOpen: () => {
-          Swal.showLoading()
-        },
-        willClose: () => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error!',
-            text: 'Incorrect email or password.',
-            showConfirmButton: true,
-          })
-        },
+        icon: 'error',
+        title: 'Login gagal!',
+        text: error.message,
       })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -84,7 +84,8 @@ const Login = () => {
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
                       <CFormInput
-                        placeholder="Username"
+                        type="email"
+                        placeholder="Email"
                         autoComplete="username"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -104,8 +105,8 @@ const Login = () => {
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>
-                        <CButton color="primary" className="px-4" type="submit">
-                          Login
+                        <CButton color="primary" className="px-4" type="submit" disabled={loading}>
+                          {loading ? 'Logging in...' : 'Login'}
                         </CButton>
                       </CCol>
                       <CCol xs={6} className="text-right">

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import {
   CButton,
   CCard,
@@ -65,11 +66,12 @@ const Books = () => {
   const [visible, setVisible] = useState(false)
   const [books, setBooks] = useState([])
   const [loading, setLoading] = useState(true)
+  const role = useSelector((state) => state.user?.role)
 
   const getData = async () => {
     setLoading(true)
     try {
-      const querySnapshot = await getDocs(collection(db, 'books'))
+      const querySnapshot = await getDocs(collection(db, 'transaction '))
       const books = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
       setBooks(books)
     } catch (error) {
@@ -89,17 +91,20 @@ const Books = () => {
         <CCard className="mb-4">
           <CCardBody>
             <CForm className="row g-3">
-              <CCol xs={12}>
-                <CButton
-                  color="primary"
-                  onClick={() => setVisible(!visible)}
-                  style={{ width: '90px' }}
-                  size="sm"
-                >
-                  <CIcon icon={cilPlus} className="me-2" />
-                  Add
-                </CButton>
-              </CCol>
+              {role === 'admin' && (
+                <CCol xs={12}>
+                  <CButton
+                    color="primary"
+                    onClick={() => setVisible(!visible)}
+                    style={{ width: '90px' }}
+                    size="sm"
+                  >
+                    <CIcon icon={cilPlus} className="me-2" />
+                    Add
+                  </CButton>
+                </CCol>
+              )}
+
               <CCol md={6}>
                 <CFormLabel htmlFor="inputEmail4">ISBN</CFormLabel>
                 <CFormInput type="text" />

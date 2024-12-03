@@ -17,12 +17,16 @@ import { logo } from 'src/assets/brand/logo'
 import { sygnet } from 'src/assets/brand/sygnet'
 
 // sidebar nav config
-import navigation from '../_nav'
+import adminNavigation from '../_navAdmin'
+import userNavigation from '../_navUser'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
+  const role = useSelector((state) => state.user?.role) // Ambil role dari Redux
+
+  const navigation = role === 'admin' ? adminNavigation : userNavigation // Bedakan berdasarkan role
 
   return (
     <CSidebar

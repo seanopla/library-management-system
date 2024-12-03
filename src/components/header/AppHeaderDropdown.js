@@ -21,10 +21,19 @@ import {
   cilUser,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-
 import avatar8 from './../../assets/images/avatars/8.jpg'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 const AppHeaderDropdown = () => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    dispatch({ type: 'logout' })
+    navigate('/login') // Arahkan ke halaman login
+  }
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
@@ -36,7 +45,7 @@ const AppHeaderDropdown = () => {
           <CIcon icon={cilUser} className="me-2" />
           Profile
         </CDropdownItem>
-        <CDropdownItem href="#">
+        <CDropdownItem href="#" onClick={handleLogout}>
           <CIcon icon={cilSettings} className="me-2" />
           Logout
         </CDropdownItem>

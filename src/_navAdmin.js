@@ -1,9 +1,9 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
-import { cilSpeedometer, cilPencil, cilBook, cilUser, cilLibraryBuilding } from '@coreui/icons'
-import { CNavGroup, CNavItem } from '@coreui/react'
+import { cilSpeedometer, cilBook, cilUser, cilPlus } from '@coreui/icons'
+import { CNavItem } from '@coreui/react'
 
-const _nav = [
+const _navAdmin = [
   {
     component: CNavItem,
     name: 'Dashboard',
@@ -18,22 +18,16 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Librarian',
-    to: '/librarian',
-    icon: <CIcon icon={cilLibraryBuilding} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
     name: 'Books',
     to: '/books',
     icon: <CIcon icon={cilBook} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: 'Transaction',
-    to: '/transaction',
-    icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
+    name: 'Add Book',
+    to: '/books/add',
+    icon: <CIcon icon={cilPlus} customClassName="nav-icon" />,
   },
 ]
 
-export default _nav
+export default _navAdmin
