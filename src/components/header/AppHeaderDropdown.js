@@ -31,7 +31,7 @@ const AppHeaderDropdown = () => {
 
   const handleLogout = () => {
     dispatch({ type: 'logout' })
-    navigate('/login') // Arahkan ke halaman login
+    navigate('/login')
   }
 
   return (
