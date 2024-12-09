@@ -96,7 +96,7 @@ const Books = () => {
       name: 'Created At',
       selector: (row) =>
         row.createdAt && row.createdAt.seconds
-          ? new Date(row.createdAt.seconds * 1000).toLocaleString()
+          ? new Date(row.createdAt.seconds * 1000).toLocaleString('es-US')
           : 'N/A',
       sortable: true,
       width: '200px',
