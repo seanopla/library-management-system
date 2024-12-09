@@ -14,7 +14,7 @@ import {
   CRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilLockLocked, cilUser } from '@coreui/icons'
+import { cilLockLocked, cilLockUnlocked, cilUser } from '@coreui/icons'
 import Swal from 'sweetalert2'
 import { auth, db } from './../../../config/firestore'
 import { signInWithEmailAndPassword } from 'firebase/auth'
@@ -25,8 +25,11 @@ const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
   const dispatch = useDispatch()
+
+  const togglePasswordVisibility = () => setShowPassword(!showPassword)
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -89,6 +92,7 @@ const Login = () => {
                         autoComplete="username"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        required
                       />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
@@ -96,12 +100,21 @@ const Login = () => {
                         <CIcon icon={cilLockLocked} />
                       </CInputGroupText>
                       <CFormInput
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         placeholder="Password"
                         autoComplete="current-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        required
                       />
+                      <CButton
+                        type="button"
+                        color="transparent"
+                        onClick={togglePasswordVisibility}
+                        className="border"
+                      >
+                        <CIcon icon={showPassword ? cilLockLocked : cilLockUnlocked} />
+                      </CButton>
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>
@@ -121,10 +134,11 @@ const Login = () => {
               <CCard className="text-white bg-primary py-5" style={{ width: '44%' }}>
                 <CCardBody className="text-center">
                   <div>
-                    <h2>Sign up</h2>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                      tempor incididunt ut labore et dolore magna aliqua.
+                    <h2>Library Management System</h2>
+                    <p className="mt-3">
+                      "Join now and enjoy easy access to our extensive library collection. With your
+                      account, manage book borrowing, view history, and enjoy a seamless reading
+                      experience!"
                     </p>
                     <Link to="/register">
                       <CButton color="primary" className="mt-3" active tabIndex={-1}>
