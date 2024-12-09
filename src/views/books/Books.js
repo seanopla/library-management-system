@@ -16,9 +16,10 @@ import {
   CRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilPlus, cilSearch } from '@coreui/icons'
+import { cilPlus, cilReload, cilSearch, cilX } from '@coreui/icons'
 import DataTable from 'react-data-table-component'
 import { fetchBooks, addBook, updateBook, deleteBook } from './BooksViewModel'
+import Swal from 'sweetalert2'
 
 const defaultBook = {
   isbn: '',
@@ -26,23 +27,23 @@ const defaultBook = {
   author: '',
   category: '',
   publisher: '',
-  year: null,
-  stock: null,
+  year: '',
+  stock: '',
+}
+
+const defaultSearch = {
+  isbn: '',
+  title: '',
+  author: '',
 }
 
 const Books = () => {
   const [visible, setVisible] = useState(false)
   const [books, setBooks] = useState([])
   const [loading, setLoading] = useState(true)
-  const [newBook, setNewBook] = useState({
-    isbn: '',
-    title: '',
-    author: '',
-    category: '',
-    publisher: '',
-    year: '',
-    stock: 0,
-  })
+  const [filteredBooks, setFilteredBooks] = useState([])
+  const [newBook, setNewBook] = useState(defaultBook)
+  const [searchFilters, setSearchFilters] = useState(defaultSearch)
   const [editBookId, setEditBookId] = useState(null)
   const role = useSelector((state) => state.user?.role)
 
@@ -62,6 +63,12 @@ const Books = () => {
     {
       name: 'Author',
       selector: (row) => row.author,
+      sortable: true,
+      width: '200px',
+    },
+    {
+      name: 'ISBN',
+      selector: (row) => row.isbn,
       sortable: true,
       width: '200px',
     },
@@ -116,7 +123,7 @@ const Books = () => {
                 color="danger"
                 size="sm"
                 onClick={() => deleteBook(row.id, refreshBooks)}
-                className="ms-2"
+                className="ms-2 text-white"
                 style={{ width: '60px' }}
               >
                 Delete
@@ -129,28 +136,61 @@ const Books = () => {
     },
   ]
 
-  // Refresh data buku
-  const refreshBooks = () => fetchBooks(setBooks, setLoading)
+  const refreshBooks = async () => {
+    const allBooks = await fetchBooks(setBooks, setLoading)
+    setFilteredBooks(allBooks) // Tampilkan semua data secara default
+  }
+
+  const handleRefresh = () => {
+    refreshBooks()
+  }
+
+  const handleClear = () => {
+    setSearchFilters(defaultSearch)
+  }
 
   useEffect(() => {
     refreshBooks()
   }, [])
 
+  const handleSearch = () => {
+    const filtered = books.filter((book) => {
+      return (
+        (searchFilters.isbn === '' ||
+          book.isbn.toLowerCase().includes(searchFilters.isbn.toLowerCase())) &&
+        (searchFilters.title === '' ||
+          book.title.toLowerCase().includes(searchFilters.title.toLowerCase())) &&
+        (searchFilters.author === '' ||
+          book.author.toLowerCase().includes(searchFilters.author.toLowerCase()))
+      )
+    })
+    setFilteredBooks(filtered)
+  }
+
   const handleSave = () => {
+    if (
+      !newBook.isbn ||
+      !newBook.title ||
+      !newBook.author ||
+      !newBook.category ||
+      !newBook.publisher ||
+      !newBook.year ||
+      !newBook.stock
+    ) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Validation Error',
+        text: 'Please fill in all required fields.',
+      })
+      return // Hentikan proses jika ada field kosong
+    }
+
     if (editBookId) {
       updateBook(editBookId, newBook, setVisible, refreshBooks)
     } else {
       addBook(newBook, setVisible, refreshBooks)
     }
-    setNewBook({
-      isbn: '',
-      title: '',
-      author: '',
-      category: '',
-      publisher: '',
-      year: null,
-      stock: null,
-    })
+    setNewBook(defaultBook)
     setEditBookId(null)
   }
 
@@ -180,23 +220,58 @@ const Books = () => {
 
               <CCol md={6}>
                 <CFormLabel htmlFor="inputEmail4">ISBN</CFormLabel>
-                <CFormInput type="text" />
+                <CFormInput
+                  type="text"
+                  value={searchFilters.isbn}
+                  onChange={(e) => setSearchFilters({ ...searchFilters, isbn: e.target.value })}
+                />
               </CCol>
               <CCol md={6}>
                 <CFormLabel htmlFor="inputPassword4">Book Name</CFormLabel>
-                <CFormInput type="text" />
+                <CFormInput
+                  type="text"
+                  value={searchFilters.title}
+                  onChange={(e) => setSearchFilters({ ...searchFilters, title: e.target.value })}
+                />
+              </CCol>
+              <CCol md={6}>
+                <CFormLabel>Author</CFormLabel>
+                <CFormInput
+                  type="text"
+                  value={searchFilters.author}
+                  onChange={(e) => setSearchFilters({ ...searchFilters, author: e.target.value })}
+                />
               </CCol>
               <CCol xs={12}>
-                <CButton color="primary" size="sm" style={{ width: '90px' }}>
+                <CButton color="primary" size="sm" style={{ width: '90px' }} onClick={handleSearch}>
                   <CIcon icon={cilSearch} className="me-2" />
                   Search
+                </CButton>
+                <CButton
+                  className="mx-2"
+                  color="primary"
+                  size="sm"
+                  style={{ width: '90px' }}
+                  onClick={handleRefresh}
+                >
+                  <CIcon icon={cilReload} className="me-2" />
+                  Refresh
+                </CButton>
+                <CButton
+                  color="danger text-white"
+                  size="sm"
+                  style={{ width: '90px' }}
+                  onClick={handleClear}
+                >
+                  <CIcon icon={cilX} className="me-2" />
+                  Clear
                 </CButton>
               </CCol>
             </CForm>
             <hr />
             <DataTable
               columns={columns}
-              data={books}
+              data={filteredBooks}
               pagination
               fixedHeader
               fixedHeaderScrollHeight="500px"
@@ -217,7 +292,13 @@ const Books = () => {
             <CModalTitle>{editBookId ? 'Edit Book' : 'Add Book'}</CModalTitle>
           </CModalHeader>
           <CModalBody>
-            <CForm className="row g-3">
+            <CForm
+              className="row g-3"
+              onSubmit={(e) => {
+                e.preventDefault() // Mencegah pengiriman form bawaan
+                handleSave() // Panggil fungsi untuk memproses data
+              }}
+            >
               <CCol md={12}>
                 <CFormLabel>ISBN</CFormLabel>
                 <CFormInput
@@ -295,7 +376,13 @@ const Books = () => {
             >
               Close
             </CButton>
-            <CButton color="primary" size="sm" style={{ width: '90px' }} onClick={handleSave}>
+            <CButton
+              color="primary"
+              size="sm"
+              style={{ width: '90px' }}
+              onClick={handleSave}
+              type="submit"
+            >
               Save
             </CButton>
           </CModalFooter>

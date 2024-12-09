@@ -15,15 +15,15 @@ export const fetchBooks = async (setBooks, setLoading) => {
   setLoading(true)
   try {
     const querySnapshot = await getDocs(collection(db, 'books'))
-    const books = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+    const books = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }))
     setBooks(books)
+    return books
   } catch (error) {
     console.error('Error fetching books:', error)
-    Swal.fire({
-      icon: 'error',
-      title: 'Failed to fetch books!',
-      text: error.message,
-    })
+    return []
   } finally {
     setLoading(false)
   }
