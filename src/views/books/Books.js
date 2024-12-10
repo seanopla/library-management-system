@@ -174,15 +174,17 @@ const Books = () => {
       !newBook.author ||
       !newBook.category ||
       !newBook.publisher ||
-      !newBook.year ||
-      !newBook.stock
+      isNaN(newBook.year) ||
+      newBook.year <= 0 ||
+      isNaN(newBook.stock) ||
+      newBook.stock < 0
     ) {
       Swal.fire({
         icon: 'error',
         title: 'Validation Error',
         text: 'Please fill in all required fields.',
       })
-      return // Hentikan proses jika ada field kosong
+      return
     }
 
     if (editBookId) {

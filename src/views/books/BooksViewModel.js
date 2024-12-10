@@ -32,11 +32,16 @@ export const fetchBooks = async (setBooks, setLoading) => {
 // Fungsi untuk menambahkan buku baru
 export const addBook = async (newBook, setVisible, refreshBooks) => {
   try {
-    await addDoc(collection(db, 'books'), {
+    const bookData = {
       ...newBook,
+      year: parseInt(newBook.year, 10),
+      stock: parseInt(newBook.stock, 10),
       createdAt: serverTimestamp(),
       borrowCount: 0,
-    })
+    }
+
+    await addDoc(collection(db, 'books'), bookData)
+
     Swal.fire({
       icon: 'success',
       title: 'Book added successfully!',
@@ -58,8 +63,13 @@ export const addBook = async (newBook, setVisible, refreshBooks) => {
 // Fungsi untuk memperbarui buku
 export const updateBook = async (id, updatedBook, setVisible, refreshBooks) => {
   try {
-    const bookRef = doc(db, 'books', id)
-    await updateDoc(bookRef, updatedBook)
+    const bookData = {
+      ...updatedBook,
+      year: parseInt(updatedBook.year, 10),
+      stock: parseInt(updatedBook.stock, 10),
+    }
+
+    await updateDoc(doc(db, 'books', bookId), bookData)
     Swal.fire({
       icon: 'success',
       title: 'Book updated successfully!',
