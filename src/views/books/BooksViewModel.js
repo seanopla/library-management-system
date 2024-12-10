@@ -35,6 +35,7 @@ export const addBook = async (newBook, setVisible, refreshBooks) => {
     await addDoc(collection(db, 'books'), {
       ...newBook,
       createdAt: serverTimestamp(),
+      borrowCount: 0,
     })
     Swal.fire({
       icon: 'success',

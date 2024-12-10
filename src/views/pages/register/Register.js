@@ -73,6 +73,7 @@ const Register = () => {
         email: formData.email,
         role: 'user', // Set default role
         createdAt: serverTimestamp(), // Set timestamp
+        borrowCount: 0,
       })
 
       Swal.fire({
