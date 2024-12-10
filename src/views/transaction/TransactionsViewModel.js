@@ -48,9 +48,14 @@ export const approveTransaction = async (transactionId, refreshTransactions) => 
 
     const transactionData = transactionSnap.data()
 
+    const today = new Date()
+    const dueDate = new Date()
+    dueDate.setDate(today.getDate() + 30)
+
     await updateDoc(transactionRef, {
       status: 'approved',
       borrowDate: serverTimestamp(),
+      dueDate: dueDate,
     })
 
     // Perbarui borrowCount di books dan users

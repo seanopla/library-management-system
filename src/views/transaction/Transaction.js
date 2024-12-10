@@ -66,8 +66,20 @@ const Transaction = () => {
   }
 
   const columns = [
-    { name: 'User Name', selector: (row) => row.userName, sortable: true },
-    { name: 'Book Title', selector: (row) => row.bookTitle, sortable: true },
+    {
+      name: 'User Name',
+      selector: (row) => row.userName,
+      sortable: true,
+      width: '200px',
+      wrap: true,
+    },
+    {
+      name: 'Book Title',
+      selector: (row) => row.bookTitle,
+      sortable: true,
+      width: '200px',
+      wrap: true,
+    },
     {
       name: 'Borrow Date',
       selector: (row) =>
@@ -80,9 +92,17 @@ const Transaction = () => {
         row.returnDate ? new Date(row.returnDate.seconds * 1000).toLocaleDateString('es-US') : '-',
       sortable: true,
     },
+    {
+      name: 'Due Date',
+      selector: (row) =>
+        row.dueDate ? new Date(row.dueDate.seconds * 1000).toLocaleDateString('es-US') : '-',
+      sortable: true,
+    },
+
     { name: 'Status', selector: (row) => row.status, sortable: true },
     {
       name: 'Actions',
+      width: '200px',
       cell: (row) => (
         <>
           {row.status === 'pending' && (
