@@ -47,6 +47,7 @@ const Users = () => {
   }
 
   const columns = [
+    { name: 'Id', selector: (row) => row.id, sortable: true, wrap: true, width: '200px' },
     { name: 'Name', selector: (row) => row.name, sortable: true, wrap: true, width: '200px' },
     { name: 'Email', selector: (row) => row.email, sortable: true, wrap: true, width: '200px' },
     { name: 'Role', selector: (row) => row.role, sortable: true },

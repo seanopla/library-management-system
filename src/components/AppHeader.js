@@ -13,6 +13,7 @@ import {
   CNavLink,
   CNavItem,
   useColorModes,
+  CDropdownHeader,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -27,6 +28,7 @@ import {
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
+import HeaderNotification from './header/HeaderNotification'
 
 const AppHeader = () => {
   const headerRef = useRef()
@@ -51,6 +53,9 @@ const AppHeader = () => {
         >
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
+        <CHeaderNav className="ms-auto">
+          <HeaderNotification userId="BIUuOpuC8BZWmxIx5b6PS2BOgVg1" />
+        </CHeaderNav>
         <CHeaderNav>
           <li className="nav-item py-1">
             <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
