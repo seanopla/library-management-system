@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react'
-import { NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   CContainer,
@@ -10,25 +9,14 @@ import {
   CHeader,
   CHeaderNav,
   CHeaderToggler,
-  CNavLink,
-  CNavItem,
   useColorModes,
-  CDropdownHeader,
+  CBadge,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import {
-  cilBell,
-  cilContrast,
-  cilEnvelopeOpen,
-  cilList,
-  cilMenu,
-  cilMoon,
-  cilSun,
-} from '@coreui/icons'
+import { cilBell, cilContrast, cilMenu, cilMoon, cilSun } from '@coreui/icons'
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
-import HeaderNotification from './header/HeaderNotification'
 
 const AppHeader = () => {
   const headerRef = useRef()
@@ -54,7 +42,40 @@ const AppHeader = () => {
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
         <CHeaderNav className="ms-auto">
-          <HeaderNotification userId="BIUuOpuC8BZWmxIx5b6PS2BOgVg1" />
+          <CDropdown
+            variant="nav-item"
+            placement="top"
+            // alignment={{ xs: 'start', lg: 'end' }}
+          >
+            <CDropdownToggle caret={false}>
+              <CIcon icon={cilBell} size="lg" />
+              <CBadge
+                color="danger"
+                position="top-end"
+                shape="rounded-pill"
+                style={{ translate: '-35% 35%' }}
+              >
+                2 <span className="visually-hidden">unread messages</span>
+              </CBadge>
+            </CDropdownToggle>
+            <CDropdownMenu
+              style={{
+                minWidth: '300px',
+              }}
+            >
+              <CDropdownItem
+                href="#"
+                style={{
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                  overflowWrap: 'break-word',
+                }}
+              >
+                <div>Notification 1 Message</div>
+              </CDropdownItem>
+              <CDropdownItem href="#">Notification message 2</CDropdownItem>
+            </CDropdownMenu>
+          </CDropdown>
         </CHeaderNav>
         <CHeaderNav>
           <li className="nav-item py-1">
