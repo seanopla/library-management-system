@@ -44,7 +44,7 @@ const Report = () => {
         <CCard className="mb-4">
           <CCardHeader>Top Borrowed Books</CCardHeader>
           <CCardBody>
-            <CTable>
+            <CTable responsive>
               <CTableHead>
                 <CTableRow>
                   <CTableHeaderCell>#</CTableHeaderCell>
@@ -71,7 +71,7 @@ const Report = () => {
         <CCard className="mb-4">
           <CCardHeader>Top Active Users</CCardHeader>
           <CCardBody>
-            <CTable>
+            <CTable responsive>
               <CTableHead>
                 <CTableRow>
                   <CTableHeaderCell>#</CTableHeaderCell>
@@ -100,7 +100,7 @@ const Report = () => {
         <CCard className="mb-4">
           <CCardHeader>Transaction History</CCardHeader>
           <CCardBody>
-            <CTable>
+            <CTable responsive>
               <CTableHead>
                 <CTableRow>
                   <CTableHeaderCell>#</CTableHeaderCell>
