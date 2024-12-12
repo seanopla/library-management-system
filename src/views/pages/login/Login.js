@@ -41,8 +41,8 @@ const Login = () => {
 
       const userDoc = await getDoc(doc(db, 'users', user.uid))
       if (userDoc.exists()) {
-        const role = userDoc.data().role
-        dispatch({ type: 'login', payload: { uid: user.uid, email: user.email, role } })
+        const { role, name } = userDoc.data()
+        dispatch({ type: 'login', payload: { uid: user.uid, email: user.email, role, name } })
 
         Swal.fire({
           icon: 'success',
@@ -75,7 +75,7 @@ const Login = () => {
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
         <CRow className="justify-content-center">
-          <CCol md={8}>
+          <CCol lg={8} md={10}>
             <CCardGroup>
               <CCard className="p-4">
                 <CCardBody>
@@ -131,8 +131,8 @@ const Login = () => {
                   </CForm>
                 </CCardBody>
               </CCard>
-              <CCard className="text-white bg-primary py-5" style={{ width: '44%' }}>
-                <CCardBody className="text-center">
+              <CCard className="text-white bg-primary py-5" style={{ flex: 1 }}>
+                <CCardBody className="text-center d-flex flex-column justify-content-center">
                   <div>
                     <h2>Library Management System</h2>
                     <p className="mt-3">
@@ -141,7 +141,7 @@ const Login = () => {
                       experience!"
                     </p>
                     <Link to="/register">
-                      <CButton color="primary" className="mt-3" active tabIndex={-1}>
+                      <CButton color="light" className="mt-3" active tabIndex={-1}>
                         Register Now!
                       </CButton>
                     </Link>
