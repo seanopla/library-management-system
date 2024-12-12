@@ -7,6 +7,7 @@ const Users = React.lazy(() => import('./views/users/Users'))
 const Books = React.lazy(() => import('./views/books/Books'))
 const Report = React.lazy(() => import('./views/report/Report'))
 const BorrowBook = React.lazy(() => import('./views/borrow-book/BorrowBook'))
+const Profile = React.lazy(() => import('./views/profile/Profile'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -16,6 +17,7 @@ const routes = [
   { path: '/transaction', name: 'Transaction', element: Transaction, exact: true },
   { path: '/report', name: 'Report', element: Report, exact: true },
   { path: '/borrow-book', name: 'Borrow Book', element: BorrowBook, exact: true },
+  { path: '/profile', name: 'Profile', element: Profile, exact: true },
 ]
 
 export default routes
