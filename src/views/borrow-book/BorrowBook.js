@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { CButton, CCard, CCardBody, CCol, CForm, CFormInput, CFormLabel, CRow } from '@coreui/react'
+import {
+  CBadge,
+  CButton,
+  CCard,
+  CCardBody,
+  CCol,
+  CForm,
+  CFormInput,
+  CFormLabel,
+  CRow,
+} from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilSearch, cilReload, cilX } from '@coreui/icons'
 import DataTable from 'react-data-table-component'
@@ -115,25 +125,48 @@ const BorrowBook = () => {
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardBody>
-            <h5>Your Borrow Requests</h5>
-            <ul>
-              {userTransactions.map((transaction) => (
-                <li key={transaction.id}>
-                  {transaction.bookTitle} - {transaction.status}
-                  {transaction.status === 'pending' && (
-                    <CButton
-                      color="danger"
-                      size="sm"
-                      className="ms-2 text-white"
-                      style={{ width: '90px' }}
-                      onClick={() => handleCancelRequest(transaction.id)}
-                    >
-                      Cancel
-                    </CButton>
-                  )}
-                </li>
-              ))}
-            </ul>
+            <h5 className="mb-3">Your Borrow Requests Status</h5>
+            <CRow className="g-3">
+              {userTransactions.length > 0 ? (
+                userTransactions.map((transaction) => (
+                  <CCol md={6} key={transaction.id}>
+                    <CCard>
+                      <CCardBody className="d-flex justify-content-between align-items-center">
+                        <div>
+                          <h6 className="mb-1 fw-bold">{transaction.bookTitle}</h6>
+                          <CBadge
+                            color={
+                              transaction.status === 'approved'
+                                ? 'success'
+                                : transaction.status === 'pending'
+                                  ? 'warning'
+                                  : 'secondary'
+                            }
+                            shape="rounded-pill"
+                          >
+                            {transaction.status.charAt(0).toUpperCase() +
+                              transaction.status.slice(1)}
+                          </CBadge>
+                        </div>
+                        {transaction.status === 'pending' && (
+                          <CButton
+                            color="danger"
+                            size="sm"
+                            className="text-white"
+                            style={{ width: '90px' }}
+                            onClick={() => handleCancelRequest(transaction.id)}
+                          >
+                            Cancel
+                          </CButton>
+                        )}
+                      </CCardBody>
+                    </CCard>
+                  </CCol>
+                ))
+              ) : (
+                <p>No borrow requests available.</p>
+              )}
+            </CRow>
             <hr />
 
             <CForm className="row g-3">
