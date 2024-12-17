@@ -36,7 +36,6 @@ export const fetchUserTransactions = async (userId) => {
     for (const docSnap of querySnapshot.docs) {
       const transactionData = docSnap.data()
 
-      // Fetch book details using the reference
       const bookSnap = await getDoc(transactionData.book)
       const bookData = bookSnap.exists() ? bookSnap.data() : {}
 
@@ -68,8 +67,6 @@ export const requestBorrow = async (userId, bookId) => {
       dueDate: null,
       createdAt: serverTimestamp(),
     })
-
-    console.log('Borrow request successfully added!')
   } catch (error) {
     console.error('Error requesting borrow:', error)
     throw error
@@ -80,7 +77,6 @@ export const requestBorrow = async (userId, bookId) => {
 export const cancelBorrowRequest = async (transactionId) => {
   try {
     await deleteDoc(doc(db, 'transactions', transactionId))
-    console.log('Transaction canceled successfully')
   } catch (error) {
     console.error('Error canceling borrow request:', error)
     throw error

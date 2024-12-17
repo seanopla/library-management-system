@@ -1,6 +1,5 @@
-import React, { Suspense, useEffect } from 'react'
+import React, { Suspense } from 'react'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import { useSelector } from 'react-redux'
 
 import { CSpinner } from '@coreui/react'
 import './scss/style.scss'
@@ -16,8 +15,6 @@ const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
 const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
 
 const App = () => {
-  const isAuthenticated = useSelector((state) => state.isAuthenticated)
-
   return (
     <Router>
       <Suspense

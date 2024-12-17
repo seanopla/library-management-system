@@ -118,7 +118,11 @@ const Report = () => {
                     <CTableDataCell>{transaction.userName}</CTableDataCell>
                     <CTableDataCell>{transaction.bookTitle}</CTableDataCell>
                     <CTableDataCell>
-                      {new Date(transaction.borrowDate.seconds * 1000).toLocaleDateString('es-US')}
+                      {transaction.borrowDate && transaction.borrowDate.seconds
+                        ? new Date(transaction.borrowDate.seconds * 1000).toLocaleDateString(
+                            'es-US',
+                          )
+                        : 'N/A'}
                     </CTableDataCell>
                     <CTableDataCell>
                       {transaction.returnDate
