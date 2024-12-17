@@ -51,6 +51,7 @@ import {
   handleUserReminders,
   handleUserStatusNotifications,
 } from '../notification/NotificationViewModel'
+import WidgetsCharts from './WidgetChart'
 
 const Dashboard = () => {
   const role = useSelector((state) => state.user?.role)
@@ -77,6 +78,7 @@ const Dashboard = () => {
       <CCard>
         <CCardBody>
           <Widget className="mb-4" />
+          <WidgetsCharts />
         </CCardBody>
       </CCard>
     </>

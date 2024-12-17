@@ -1,25 +1,39 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
-
-import {
-  CRow,
-  CCol,
-  CDropdown,
-  CDropdownMenu,
-  CDropdownItem,
-  CDropdownToggle,
-  CWidgetStatsA,
-} from '@coreui/react'
+import { CRow, CCol, CWidgetStatsA } from '@coreui/react'
 import { getStyle } from '@coreui/utils'
-import { CChartBar, CChartLine } from '@coreui/react-chartjs'
-import CIcon from '@coreui/icons-react'
-import { cilArrowBottom, cilArrowTop, cilOptions } from '@coreui/icons'
+import {
+  fetchPendingBooks,
+  fetchTotalBooks,
+  fetchTotalTransactions,
+  fetchTotalUsers,
+} from '../views/dashboard/DashboardViewModel'
 
 const WidgetsDropdown = (props) => {
+  const [totalBooks, setTotalBooks] = useState(0)
+  const [totalUsers, setTotalUsers] = useState(0)
+  const [totalTransactions, setTotalTransactions] = useState(0)
+  const [pendingBooks, setPendingBooks] = useState(0)
+
   const widgetChartRef1 = useRef(null)
   const widgetChartRef2 = useRef(null)
 
   useEffect(() => {
+    // Fetch dashboard data
+    const loadDashboardData = async () => {
+      const books = await fetchTotalBooks()
+      const users = await fetchTotalUsers()
+      const transactions = await fetchTotalTransactions()
+      const pending = await fetchPendingBooks()
+
+      setTotalBooks(books)
+      setTotalUsers(users)
+      setTotalTransactions(transactions)
+      setPendingBooks(pending)
+    }
+
+    loadDashboardData()
+
     document.documentElement.addEventListener('ColorSchemeChange', () => {
       if (widgetChartRef1.current) {
         setTimeout(() => {
@@ -40,30 +54,35 @@ const WidgetsDropdown = (props) => {
   return (
     <CRow className={props.className} xs={{ gutter: 4 }}>
       <CCol sm={6} xl={4} xxl={3}>
-        <CWidgetStatsA color="primary" value={<>26K</>} title="Books" style={{ height: '150px' }} />
+        <CWidgetStatsA
+          color="primary"
+          value={<>{totalBooks}</>}
+          title="Total Books"
+          style={{ height: '150px' }}
+        />
       </CCol>
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="info"
-          value={<>$6.200</>}
+          value={<>{totalUsers}</>}
           style={{ height: '150px' }}
-          title="Library Members"
+          title="Total Users"
         />
       </CCol>
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="warning"
-          value={<>2.49%</>}
+          value={<>{totalTransactions}</>}
           style={{ height: '150px' }}
-          title="Transactions"
+          title="Total Transactions"
         />
       </CCol>
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="danger"
-          value={<>44K</>}
+          value={<>{pendingBooks}</>}
           style={{ height: '150px' }}
-          title="Book Issued"
+          title="Book Pending"
         />
       </CCol>
     </CRow>
