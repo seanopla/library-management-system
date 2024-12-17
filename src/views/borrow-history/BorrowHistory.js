@@ -81,19 +81,19 @@ const BorrowHistory = () => {
     {
       name: 'Borrow Date',
       selector: (row) =>
-        row.borrowDate ? new Date(row.borrowDate.seconds * 1000).toLocaleDateString() : '-',
+        row.borrowDate ? new Date(row.borrowDate.seconds * 1000).toLocaleDateString('es-US') : '-',
       sortable: true,
     },
     {
       name: 'Due Date',
       selector: (row) =>
-        row.dueDate ? new Date(row.dueDate.seconds * 1000).toLocaleDateString() : '-',
+        row.dueDate ? new Date(row.dueDate.seconds * 1000).toLocaleDateString('es-US') : '-',
       sortable: true,
     },
     {
       name: 'Return Date',
       selector: (row) =>
-        row.returnDate ? new Date(row.returnDate.seconds * 1000).toLocaleDateString() : '-',
+        row.returnDate ? new Date(row.returnDate.seconds * 1000).toLocaleDateString('es-US') : '-',
       sortable: true,
     },
     { name: 'Status', selector: (row) => row.status, sortable: true },
