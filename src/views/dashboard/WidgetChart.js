@@ -12,6 +12,7 @@ import {
   Tooltip,
   Legend,
   scales,
+  Filler,
 } from 'chart.js'
 import {
   fetchTransactionStatusCounts,
@@ -29,6 +30,7 @@ ChartJS.register(
   BarElement,
   Tooltip,
   Legend,
+  Filler,
 )
 
 const WidgetsCharts = () => {
@@ -59,10 +61,6 @@ const WidgetsCharts = () => {
         backgroundColor: ['#4CAF50', '#FFC107', '#F44336'],
       },
     ],
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-    },
   }
 
   // Line Chart: Transactions by Month

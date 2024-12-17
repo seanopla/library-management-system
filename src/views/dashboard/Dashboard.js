@@ -1,16 +1,13 @@
 import React, { useEffect } from 'react'
-import classNames from 'classnames'
-
+import { useSelector } from 'react-redux'
 import {
-  CAvatar,
-  CButton,
-  CButtonGroup,
   CCard,
   CCardBody,
-  CCardFooter,
   CCardHeader,
   CCol,
-  CProgress,
+  CContainer,
+  CListGroup,
+  CListGroupItem,
   CRow,
   CTable,
   CTableBody,
@@ -19,68 +16,124 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import {
-  cibCcAmex,
-  cibCcApplePay,
-  cibCcMastercard,
-  cibCcPaypal,
-  cibCcStripe,
-  cibCcVisa,
-  cibGoogle,
-  cibFacebook,
-  cibLinkedin,
-  cifBr,
-  cifEs,
-  cifFr,
-  cifIn,
-  cifPl,
-  cifUs,
-  cibTwitter,
-  cilCloudDownload,
-  cilPeople,
-  cilUser,
-  cilUserFemale,
-} from '@coreui/icons'
-
-import Widget from '../../components/Widget'
-import { useSelector } from 'react-redux'
-import {
-  handleOverdueNotifications,
-  handleUpcomingReminders,
-  handleUserReminders,
-  handleUserStatusNotifications,
-} from '../notification/NotificationViewModel'
 import WidgetsCharts from './WidgetChart'
+import WidgetsDropdown from './../../components/Widget'
+
+const libraryInfo = {
+  schedule: [
+    { day: 'Monday - Friday', time: '08:00 AM - 08:00 PM' },
+    { day: 'Saturday', time: '09:00 AM - 06:00 PM' },
+    { day: 'Sunday', time: 'Closed' },
+  ],
+  rules: [
+    'Users must bring their library membership card.',
+    'No food or drinks are allowed inside the library.',
+    'Borrowed books must be returned on time.',
+    'Please maintain silence in the library area.',
+  ],
+  contact: {
+    address: '123 Library Street, Booktown',
+    phone: '(021) 123-4567',
+    email: 'info@library.com',
+    instagram: '@library_hub',
+    facebook: 'Library Hub',
+  },
+}
 
 const Dashboard = () => {
   const role = useSelector((state) => state.user?.role)
-  const userId = useSelector((state) => state.user?.uid)
-
-  const processNotifications = async () => {
-    if (role === 'admin') {
-      await handleOverdueNotifications()
-      await handleUpcomingReminders()
-    } else if (role === 'user' && userId) {
-      await handleUserReminders(userId)
-      await handleUserStatusNotifications(userId)
-    }
-  }
-
-  useEffect(() => {
-    if (role) {
-      processNotifications()
-    }
-  }, [role, userId])
 
   return (
     <>
-      <CCard>
-        <CCardBody>
-          <Widget className="mb-4" />
-          <WidgetsCharts />
-        </CCardBody>
-      </CCard>
+      {role === 'admin' ? (
+        <CCard>
+          <CCardBody>
+            <WidgetsDropdown className="mb-4" />
+            <WidgetsCharts />
+          </CCardBody>
+        </CCard>
+      ) : (
+        <CContainer fluid>
+          <CCard className="shadow-sm rounded mb-4">
+            <CCardHeader className="bg-primary text-white text-center">
+              <h3 className="pt-1">Library Management System</h3>
+            </CCardHeader>
+            <CCardBody>
+              <p className="text-muted">
+                Welcome to the <b>Library Management System</b>. Access library services
+                efficiently, check operational hours, understand the rules, and get the latest
+                updates on books and events.
+              </p>
+              <hr />
+              <CRow>
+                <CCol md="6">
+                  <h5 className="text-primary">Library Schedule</h5>
+                  <CTable striped hover>
+                    <CTableHead>
+                      <CTableRow>
+                        <CTableHeaderCell>Day</CTableHeaderCell>
+                        <CTableHeaderCell>Operating Hours</CTableHeaderCell>
+                      </CTableRow>
+                    </CTableHead>
+                    <CTableBody>
+                      {libraryInfo.schedule.map((item, idx) => (
+                        <CTableRow key={idx}>
+                          <CTableDataCell>{item.day}</CTableDataCell>
+                          <CTableDataCell>{item.time}</CTableDataCell>
+                        </CTableRow>
+                      ))}
+                    </CTableBody>
+                  </CTable>
+                </CCol>
+                <CCol md="6">
+                  <h5 className="text-primary">Library Rules</h5>
+                  <CListGroup flush>
+                    {libraryInfo.rules.map((rule, idx) => (
+                      <CListGroupItem key={idx} className="bg-light">
+                        {rule}
+                      </CListGroupItem>
+                    ))}
+                  </CListGroup>
+                </CCol>
+              </CRow>
+              <hr />
+              <CRow>
+                <CCol md="6" className="mb-4">
+                  <h5 className="text-primary">Contact Us</h5>
+                  <CListGroup>
+                    <CListGroupItem>
+                      <b>Address:</b> {libraryInfo.contact.address}
+                    </CListGroupItem>
+                    <CListGroupItem>
+                      <b>Phone:</b> {libraryInfo.contact.phone}
+                    </CListGroupItem>
+                    <CListGroupItem>
+                      <b>Email:</b> {libraryInfo.contact.email}
+                    </CListGroupItem>
+                    <CListGroupItem>
+                      <b>Instagram:</b> {libraryInfo.contact.instagram}
+                    </CListGroupItem>
+                    <CListGroupItem>
+                      <b>Facebook:</b> {libraryInfo.contact.facebook}
+                    </CListGroupItem>
+                  </CListGroup>
+                </CCol>
+                <CCol md="6">
+                  <h5 className="text-primary">Our Location</h5>
+                  <iframe
+                    title="Library Location"
+                    src="https://maps.google.com/maps?q=Jl.+Perpustakaan+No.+123,+Kota+Buku&output=embed"
+                    width="100%"
+                    height="250px"
+                    style={{ border: '0', borderRadius: '8px' }}
+                    allowFullScreen
+                  ></iframe>
+                </CCol>
+              </CRow>
+            </CCardBody>
+          </CCard>
+        </CContainer>
+      )}
     </>
   )
 }
