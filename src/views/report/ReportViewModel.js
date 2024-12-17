@@ -23,8 +23,6 @@ export const updateBorrowCount = async (bookId, userId) => {
     await updateDoc(userRef, {
       borrowCount: increment(1),
     })
-
-    console.log('Borrow count updated successfully!')
   } catch (error) {
     console.error('Error updating borrow count:', error)
   }

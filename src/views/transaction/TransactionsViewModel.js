@@ -48,6 +48,27 @@ export const approveTransaction = async (transactionId, refreshTransactions) => 
 
     const transactionData = transactionSnap.data()
 
+    if (!transactionData.book || !transactionData.user) {
+      throw new Error('Invalid book or user reference in the transaction.')
+    }
+
+    const bookRef = transactionData.book
+    const bookSnap = await getDoc(bookRef)
+
+    if (!bookSnap.exists()) {
+      throw new Error('Book does not exist.')
+    }
+
+    const bookData = bookSnap.data()
+
+    if (bookData.stock <= 0) {
+      throw new Error('Not enough stock for this book.')
+    }
+
+    await updateDoc(bookRef, {
+      stock: bookData.stock - 1,
+    })
+
     const today = new Date()
     const dueDate = new Date()
     dueDate.setDate(today.getDate() + 30)
@@ -58,20 +79,14 @@ export const approveTransaction = async (transactionId, refreshTransactions) => 
       dueDate: dueDate,
     })
 
-    // Perbarui borrowCount di books dan users
-    if (transactionData.book && transactionData.user) {
-      const bookId = transactionData.book.id
-      const userId = transactionData.user.id
-
-      await updateBorrowCount(bookId, userId)
-    } else {
-      throw new Error('Invalid book or user reference in the transaction.')
-    }
+    const bookId = bookRef.id
+    const userId = transactionData.user.id
+    await updateBorrowCount(bookId, userId)
 
     Swal.fire({
       icon: 'success',
       title: 'Approved!',
-      text: 'The transaction has been approved successfully.',
+      text: 'The transaction has been approved and stock updated successfully.',
     })
 
     refreshTransactions()
@@ -80,7 +95,7 @@ export const approveTransaction = async (transactionId, refreshTransactions) => 
     Swal.fire({
       icon: 'error',
       title: 'Error',
-      text: 'Failed to approve transaction. Please try again.',
+      text: error.message || 'Failed to approve transaction.',
     })
   }
 }
@@ -112,7 +127,33 @@ export const rejectTransaction = async (transactionId, refreshTransactions) => {
 // Return function
 export const confirmReturn = async (transactionId, refreshTransactions) => {
   try {
-    await updateDoc(doc(db, 'transactions', transactionId), {
+    const transactionRef = doc(db, 'transactions', transactionId)
+    const transactionSnap = await getDoc(transactionRef)
+
+    if (!transactionSnap.exists()) {
+      throw new Error('Transaction does not exist.')
+    }
+
+    const transactionData = transactionSnap.data()
+
+    if (!transactionData.book) {
+      throw new Error('Invalid book reference in the transaction.')
+    }
+
+    const bookRef = transactionData.book
+    const bookSnap = await getDoc(bookRef)
+
+    if (!bookSnap.exists()) {
+      throw new Error('Book does not exist.')
+    }
+
+    const bookData = bookSnap.data()
+
+    await updateDoc(bookRef, {
+      stock: bookData.stock + 1,
+    })
+
+    await updateDoc(transactionRef, {
       status: 'returned',
       returnDate: serverTimestamp(),
     })
@@ -120,7 +161,7 @@ export const confirmReturn = async (transactionId, refreshTransactions) => {
     Swal.fire({
       icon: 'info',
       title: 'Book Returned!',
-      text: 'The return has been confirmed successfully.',
+      text: 'The book has been returned and stock updated successfully.',
     })
 
     refreshTransactions()
@@ -129,7 +170,7 @@ export const confirmReturn = async (transactionId, refreshTransactions) => {
     Swal.fire({
       icon: 'error',
       title: 'Error',
-      text: 'Failed to confirm return. Please try again.',
+      text: error.message || 'Failed to confirm return.',
     })
   }
 }
