@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   CContainer,
@@ -10,55 +10,20 @@ import {
   CHeaderNav,
   CHeaderToggler,
   useColorModes,
-  CBadge,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilBell, cilContrast, cilMenu, cilMoon, cilSun } from '@coreui/icons'
+import { cilContrast, cilMenu, cilMoon, cilSun } from '@coreui/icons'
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
-import { collection, getDocs, query, orderBy } from 'firebase/firestore'
-import { db } from '../config/firestore'
-import { useNavigate } from 'react-router-dom'
-import AdminNotification from './header/AdminNotification'
+import NotificationDropdown from './header/NotificationDropdown'
 
 const AppHeader = () => {
-  const [notifications, setNotifications] = useState([])
-  const [unreadCount, setUnreadCount] = useState(0)
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
   const dispatch = useDispatch()
-  const navigate = useNavigate()
   const sidebarShow = useSelector((state) => state.sidebarShow)
-
-  const fetchNotifications = async () => {
-    try {
-      const q = query(collection(db, 'notifications'), orderBy('createdAt', 'desc'))
-      const querySnapshot = await getDocs(q)
-      const notifData = []
-      let unread = 0
-
-      querySnapshot.forEach((doc) => {
-        const data = doc.data()
-        notifData.push({ id: doc.id, ...data })
-        if (!data.isRead) unread++
-      })
-
-      setNotifications(notifData)
-      setUnreadCount(unread)
-    } catch (error) {
-      console.error('Error fetching notifications:', error)
-    }
-  }
-
-  useEffect(() => {
-    document.addEventListener('scroll', () => {
-      headerRef.current &&
-        headerRef.current.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0)
-    })
-    fetchNotifications()
-  }, [])
 
   return (
     <CHeader position="sticky" className="mb-4 p-0" ref={headerRef}>
@@ -70,52 +35,7 @@ const AppHeader = () => {
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
         <CHeaderNav className="ms-auto">
-          {/* <CDropdown variant="nav-item" placement="top">
-            <CDropdownToggle caret={false}>
-              <CIcon icon={cilBell} size="lg" />
-              {unreadCount > 0 && (
-                <CBadge
-                  color="danger"
-                  position="top-end"
-                  shape="rounded-pill"
-                  style={{ translate: '-35% 35%' }}
-                >
-                  {unreadCount}
-                  <span className="visually-hidden">unread messages</span>
-                </CBadge>
-              )}
-            </CDropdownToggle>
-            <CDropdownMenu style={{ minWidth: '300px' }}>
-              {notifications.length > 0 ? (
-                notifications.map((notif) => (
-                  <CDropdownItem
-                    key={notif.id}
-                    href="#"
-                    style={{
-                      whiteSpace: 'normal',
-                      wordWrap: 'break-word',
-                      overflowWrap: 'break-word',
-                    }}
-                  >
-                    <div>{notif.message}</div>
-                    <small className="text-muted">
-                      {new Date(notif.createdAt.seconds * 1000).toLocaleString()}
-                    </small>
-                  </CDropdownItem>
-                ))
-              ) : (
-                <CDropdownItem>No notifications</CDropdownItem>
-              )}
-              <CDropdownItem
-                className="text-center"
-                onClick={() => navigate('/notification')}
-                style={{ cursor: 'pointer' }}
-              >
-                View All
-              </CDropdownItem>
-            </CDropdownMenu>
-          </CDropdown> */}
-          <AdminNotification />
+          <NotificationDropdown />
         </CHeaderNav>
         <CHeaderNav>
           <li className="nav-item py-1">

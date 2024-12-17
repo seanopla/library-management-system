@@ -24,6 +24,34 @@ export const fetchNotifications = async () => {
   }
 }
 
+export const fetchUserNotifications = async (userRef) => {
+  try {
+    const notificationsRef = collection(db, 'user_notifications')
+    const q = query(notificationsRef, where('userId', '==', userRef), orderBy('createdAt', 'desc'))
+
+    const querySnapshot = await getDocs(q)
+    const notifications = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+    return notifications
+  } catch (error) {
+    console.error('Error fetching user notifications:', error)
+    return []
+  }
+}
+
+const fetchUserTransactions = async () => {
+  try {
+    const q = query(
+      collection(db, 'transactions'),
+      where('status', 'in', ['approved', 'rejected', 'pending']),
+    )
+    const querySnapshot = await getDocs(q)
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+  } catch (error) {
+    console.error('Error fetching transactions:', error)
+    return []
+  }
+}
+
 export const markAsRead = async (notificationId) => {
   try {
     const notificationRef = doc(db, 'admin_notifications', notificationId)
@@ -35,14 +63,14 @@ export const markAsRead = async (notificationId) => {
 
 export const deleteNotification = async (notificationId, transactionId) => {
   try {
-    // Hapus notifikasi dari Firestore
     await deleteDoc(doc(db, 'admin_notifications', notificationId))
 
-    // Reset isNotified ke false di transaksi
-    const transactionRef = doc(db, 'transactions', transactionId)
-    await updateDoc(transactionRef, { isNotified: false })
-
-    console.log('Notification deleted and transaction reset:', transactionId)
+    if (transactionId) {
+      const transactionRef = doc(db, 'transactions', transactionId)
+      await updateDoc(transactionRef, { isNotified: false })
+    } else {
+      console.warn('Transaction ID is undefined. Skipping transaction update.')
+    }
   } catch (error) {
     console.error('Error deleting notification:', error)
   }
@@ -105,22 +133,36 @@ const notificationExists = async (message) => {
 }
 
 // Add notification to Firestore
-export const addNotification = async (message) => {
+export const addNotification = async (message, type) => {
   try {
     const exists = await notificationExists(message) // Check for duplicates
     if (exists) {
       return
     }
 
-    // Add the notification if it does not exist
+    // Add the notification with the type field
     await addDoc(collection(db, 'admin_notifications'), {
       message,
+      type, // Add the type field
       isRead: false,
       createdAt: serverTimestamp(),
     })
-    console.log('Notification added:', message)
   } catch (error) {
     console.error('Error adding notification:', error)
+  }
+}
+
+export const addUserNotification = async (userId, message, type) => {
+  try {
+    await addDoc(collection(db, 'user_notifications'), {
+      userId: doc(db, 'users', userId), // Reference to the user document
+      message,
+      type, // "reminder" or "status"
+      isRead: false,
+      createdAt: serverTimestamp(),
+    })
+  } catch (error) {
+    console.error('Error adding user notification:', error)
   }
 }
 
@@ -149,8 +191,8 @@ export const handleOverdueNotifications = async () => {
       // Buat notifikasi
       const message = `The book "${bookTitle}" borrowed by "${userName}" is overdue! Please take action.`
 
-      // Tambahkan notifikasi
-      await addNotification(message)
+      // Tambahkan notifikasi dengan type "admin_overdue"
+      await addNotification(message, 'admin_overdue')
 
       // Tandai transaksi sebagai sudah dinotifikasi
       const transactionRef = doc(db, 'transactions', transaction.id)
@@ -187,8 +229,86 @@ export const handleUpcomingReminders = async () => {
       }
     }
 
+    // Add notification with type "admin_reminder"
     await addNotification(
       `Reminder: The book "${bookTitle}" borrowed by "${userName}" is due in the next 3 days.`,
+      'admin_reminder',
     )
+  }
+}
+
+export const handleUserReminders = async () => {
+  try {
+    const today = new Date()
+    const threeDaysFromNow = new Date()
+    threeDaysFromNow.setDate(today.getDate() + 3)
+
+    const q = query(
+      collection(db, 'transactions'),
+      where('status', '==', 'approved'),
+      where('dueDate', '>=', today),
+      where('dueDate', '<=', threeDaysFromNow),
+    )
+
+    const querySnapshot = await getDocs(q)
+    for (const transactionDoc of querySnapshot.docs) {
+      const transaction = transactionDoc.data()
+
+      if (!transaction.book || !transaction.user) {
+        console.warn('Skipping transaction due to missing book or user:', transaction)
+        continue
+      }
+
+      // Fetch user and book data
+      const userRef = transaction.user
+      const bookRef = transaction.book
+
+      const userSnap = await getDoc(userRef)
+      const bookSnap = await getDoc(bookRef)
+
+      const userId = userSnap.id
+      const userName = userSnap.exists() ? userSnap.data().name : 'Unknown User'
+      const bookTitle = bookSnap.exists() ? bookSnap.data().title : 'Unknown Book'
+
+      const message = `Reminder: Your borrowed book '${bookTitle}' is due in 3 days.`
+      await addUserNotification(userId, message, 'reminder')
+    }
+  } catch (error) {
+    console.error('Error processing user reminders:', error)
+  }
+}
+
+export const handleUserStatusNotifications = async () => {
+  try {
+    const transactions = await fetchUserTransactions()
+
+    for (const transaction of transactions) {
+      const { status, user, book, isNotified } = transaction
+
+      if (!user || !book || isNotified) continue
+
+      const userSnap = await getDoc(user)
+      const bookSnap = await getDoc(book)
+
+      const userId = userSnap.id
+      const bookTitle = bookSnap.exists() ? bookSnap.data().title : 'Unknown Book'
+
+      let message = ''
+      if (status === 'approved') {
+        message = `Your request to borrow the book '${bookTitle}' has been approved.`
+      } else if (status === 'rejected') {
+        message = `Your request to borrow the book '${bookTitle}' has been rejected.`
+      }
+
+      if (message) {
+        await addUserNotification(userId, message, 'status')
+
+        // Mark transaction as notified
+        const transactionRef = doc(db, 'transactions', transaction.id)
+        await updateDoc(transactionRef, { isNotified: true })
+      }
+    }
+  } catch (error) {
+    console.error('Error processing user status notifications:', error)
   }
 }
