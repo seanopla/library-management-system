@@ -19,11 +19,24 @@ import {
 } from './TransactionsViewModel'
 import CIcon from '@coreui/icons-react'
 import { cilReload, cilSearch, cilX } from '@coreui/icons'
+import ExportToCSV from '../../utils/csvExport'
+import { formatTransactionsData } from '../../utils/csvFormatUtils'
 
 const searchInput = {
   userName: '',
   bookTitle: '',
 }
+
+const headers = [
+  { label: 'ID', key: 'Id' },
+  { label: 'User Name', key: 'UserId' },
+  { label: 'Book Title', key: 'BookId' },
+  { label: 'Status', key: 'Status' },
+  { label: 'Borrow Date', key: 'BorrowDate' },
+  { label: 'Due Date', key: 'DueDate' },
+  { label: 'Return Date', key: 'ReturnDate' },
+  { label: 'Created At', key: 'CreatedAt' },
+]
 
 const Transaction = () => {
   const [transactions, setTransactions] = useState([])
@@ -149,6 +162,13 @@ const Transaction = () => {
         <CCard className="mb-4">
           <CCardBody>
             <CForm className="row g-3">
+              <CCol xs={12}>
+                <ExportToCSV
+                  data={formatTransactionsData(transactions)}
+                  headers={headers}
+                  filename="transaction_data"
+                />
+              </CCol>
               <CCol md={6}>
                 <CFormLabel htmlFor="inputEmail4">User Name</CFormLabel>
                 <CFormInput

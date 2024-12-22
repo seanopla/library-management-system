@@ -20,6 +20,8 @@ import { cilPlus, cilReload, cilSearch, cilX } from '@coreui/icons'
 import DataTable from 'react-data-table-component'
 import { fetchBooks, addBook, updateBook, deleteBook } from './BooksViewModel'
 import Swal from 'sweetalert2'
+import ExportToCSV from '../../utils/csvExport'
+import { formatBooksData } from '../../utils/csvFormatUtils'
 
 const defaultBook = {
   isbn: '',
@@ -36,6 +38,19 @@ const defaultSearch = {
   title: '',
   author: '',
 }
+
+const headers = [
+  { label: 'ID', key: 'Id' },
+  { label: 'Category', key: 'Category' },
+  { label: 'Title', key: 'Title' },
+  { label: 'Isbn', key: 'Isbn' },
+  { label: 'Borrow Count', key: 'BorrowCount' },
+  { label: 'Year', key: 'Year' },
+  { label: 'Stock', key: 'Stock' },
+  { label: 'Author', key: 'Author' },
+  { label: 'Created At', key: 'CreatedAt' },
+  { label: 'Publisher', key: 'Publisher' },
+]
 
 const Books = () => {
   const [visible, setVisible] = useState(false)
@@ -213,10 +228,16 @@ const Books = () => {
                     }}
                     style={{ width: '90px' }}
                     size="sm"
+                    className="me-2"
                   >
                     <CIcon icon={cilPlus} className="me-2" />
                     Add
                   </CButton>
+                  <ExportToCSV
+                    data={formatBooksData(books)}
+                    headers={headers}
+                    filename="books_data"
+                  />
                 </CCol>
               )}
 

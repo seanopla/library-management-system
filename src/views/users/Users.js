@@ -4,11 +4,24 @@ import CIcon from '@coreui/icons-react'
 import { cilReload, cilSearch, cilX } from '@coreui/icons'
 import DataTable from 'react-data-table-component'
 import { fetchUsers, resetPassword } from './UsersViewModel'
+import ExportToCSV from '../../utils/csvExport'
+import { formatUsersData } from '../../utils/csvFormatUtils'
 
 const defaultSearch = {
   name: '',
   email: '',
 }
+
+const headers = [
+  { label: 'ID', key: 'Id' },
+  { label: 'Name', key: 'Name' },
+  { label: 'Email', key: 'Email' },
+  { label: 'Role', key: 'Role' },
+  { label: 'Phone', key: 'Phone' },
+  { label: 'Address', key: 'Address' },
+  { label: 'Borrow Count', key: 'BorrowCount' },
+  { label: 'Created At', key: 'CreatedAt' },
+]
 
 const Users = () => {
   const [users, setUsers] = useState([])
@@ -86,6 +99,13 @@ const Users = () => {
         <CCard className="mb-4">
           <CCardBody>
             <CForm className="row g-3">
+              <CCol xs={12}>
+                <ExportToCSV
+                  data={formatUsersData(users)}
+                  headers={headers}
+                  filename="users_data"
+                />
+              </CCol>
               <CCol md={6}>
                 <CFormLabel htmlFor="searchName">Name</CFormLabel>
                 <CFormInput
