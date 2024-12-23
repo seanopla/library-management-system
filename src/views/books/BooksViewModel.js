@@ -61,7 +61,7 @@ export const addBook = async (newBook, setVisible, refreshBooks) => {
 }
 
 // Fungsi untuk memperbarui buku
-export const updateBook = async (id, updatedBook, setVisible, refreshBooks) => {
+export const updateBook = async (bookId, updatedBook, setVisible, refreshBooks) => {
   try {
     const bookData = {
       ...updatedBook,

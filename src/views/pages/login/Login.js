@@ -46,7 +46,7 @@ const Login = () => {
 
         Swal.fire({
           icon: 'success',
-          title: 'Login berhasil!',
+          title: 'Successfully logged in!',
           showConfirmButton: false,
           timer: 1500,
         })
@@ -55,7 +55,7 @@ const Login = () => {
       } else {
         Swal.fire({
           icon: 'error',
-          title: 'Data pengguna tidak ditemukan!',
+          title: 'User not found!',
           text: 'Silakan hubungi admin sistem.',
         })
       }
@@ -63,7 +63,7 @@ const Login = () => {
       console.error('Error logging in:', error)
       Swal.fire({
         icon: 'error',
-        title: 'Login gagal!',
+        title: 'Login failed!',
         text: error.message,
       })
     } finally {
@@ -123,9 +123,9 @@ const Login = () => {
                         </CButton>
                       </CCol>
                       <CCol xs={6} className="text-right">
-                        <CButton color="link" className="px-0">
+                        {/* <CButton color="link" className="px-0">
                           Forgot password?
-                        </CButton>
+                        </CButton> */}
                       </CCol>
                     </CRow>
                   </CForm>
